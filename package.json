@@ -1,0 +1,23 @@
+{
+  "name": "my-monorepo",
+  "private": true,
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "apps/*",
+    "generated/*",
+    "specs"
+  ],
+  "devDependencies": {
+    "lint-staged": "^16.2.7",
+    "turbo": "latest"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --max-warnings=0"
+    ],
+    "*.{css,scss,md}": [
+      "prettier --write"
+    ]
+  }
+}

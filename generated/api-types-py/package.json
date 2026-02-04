@@ -1,0 +1,6 @@
+{
+  "name": "@repo/api-types-py",
+  "scripts": {
+    "generate:py": "datamodel-codegen --input ../../specs/openapi.yaml --output ./models.py"
+  }
+}
