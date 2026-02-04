@@ -20,17 +20,12 @@ export function EmailsGroupPage({ groupId }: EmailGroupPage) {
   }, [fetchUserGroups]);
 
   return (
-    <div
-      className={classNames(
-        'h-screen w-screen',
-        'flex'
-      )}
-    >
+    <div className={classNames('h-screen w-screen', 'flex')}>
       <EmailsGroupPageSidebar
         className="shrink-0"
         currentGroupId={groupId}
         onNewGroupClick={() => {
-          redirect(`/groups/${uuidv4()}`)
+          redirect(`/groups/${uuidv4()}`);
         }}
       />
       <div className="mx-auto w-[55%] h-full p-6">
@@ -39,5 +34,3 @@ export function EmailsGroupPage({ groupId }: EmailGroupPage) {
     </div>
   );
 }
-
-

@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react';
 import { useUnit } from 'effector-react';
 import { Button } from '@shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import {
-  $signUpStore,
-  submitSignUpFormFx,
-} from '@/entities/auth/store';
+import { $signUpStore, submitSignUpFormFx } from '@/entities/auth/store';
 
 type SignUpFormProps = {
   signupSuccessCallback?: () => void;
@@ -46,13 +43,10 @@ export function SignUpForm(props: SignUpFormProps) {
       </div>
 
       <div>
-        <Button 
-          onClick={() => submitForm({ username, password })}
-        >
+        <Button onClick={() => submitForm({ username, password })}>
           Sign Up
         </Button>
       </div>
     </div>
   );
 }
-

@@ -13,9 +13,7 @@ export function LoginPage() {
       )}
     >
       <div className="w-[400px] h-[200px] bg-secondary">
-        <LoginForm 
-          loginSuccessCallback={() => redirect('/groups')} 
-        />
+        <LoginForm loginSuccessCallback={() => redirect('/groups')} />
       </div>
     </div>
   );

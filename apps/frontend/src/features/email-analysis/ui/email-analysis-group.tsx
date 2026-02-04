@@ -1,25 +1,29 @@
 'use client';
 
-import { useCallback, useState, useEffect, useRef } from "react";
-import { v4 } from "uuid";
-import { EmailForm } from "./email-form";
-import { Icon } from "@/shared/ui";
-import { Button } from "@/shared/components/ui/button";
+import { useCallback, useState, useEffect, useRef } from 'react';
+import { v4 } from 'uuid';
+import { EmailForm } from './email-form';
+import { Icon } from '@/shared/ui';
+import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
-} from "@/shared/components/ui/dialog";
-import { useUnit } from "effector-react";
-import { submitGroupFx, pollGroupStatusFx, fetchGroupAnalysisFx } from "@/entities/emails/store";
-import { emailsClient } from "@/entities/emails/api/emails-client";
-import { EmailContentType } from "../types/email";
-import { EmailAnalysisDto } from "@/entities/emails/types/email-analysis-dto";
+  DialogTitle,
+} from '@/shared/components/ui/dialog';
+import { useUnit } from 'effector-react';
+import {
+  submitGroupFx,
+  pollGroupStatusFx,
+  fetchGroupAnalysisFx,
+} from '@/entities/emails/store';
+import { emailsClient } from '@/entities/emails/api/emails-client';
+import { EmailContentType } from '../types/email';
+import { EmailAnalysisDto } from '@/entities/emails/types/email-analysis-dto';
 
 type EmailAnalysisGroupProps = {
   groupId: string;
-}
+};
 
 type EmailItemState = {
   id: string;
@@ -37,23 +41,36 @@ type EmailAnalysisData = {
 export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
   groupId,
 }) => {
-  const [submitGroup, pollGroupStatus, fetchGroupAnalysis] = useUnit([submitGroupFx, pollGroupStatusFx, fetchGroupAnalysisFx]);
+  const [submitGroup, pollGroupStatus, fetchGroupAnalysis] = useUnit([
+    submitGroupFx,
+    pollGroupStatusFx,
+    fetchGroupAnalysisFx,
+  ]);
   const [emailItems, setEmailItems] = useState<EmailItemState[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [analysisData, setAnalysisData] = useState<EmailAnalysisData[]>([]);
-  const [selectedAnalysis, setSelectedAnalysis] = useState<EmailAnalysisData | null>(null);
-  const [selectedGraphEmail, setSelectedGraphEmail] = useState<string | null>(null);
+  const [selectedAnalysis, setSelectedAnalysis] =
+    useState<EmailAnalysisData | null>(null);
+  const [selectedGraphEmail, setSelectedGraphEmail] = useState<string | null>(
+    null
+  );
   const [graphData, setGraphData] = useState<string | null>(null);
   const [isGraphLoading, setIsGraphLoading] = useState(false);
-  const [selectedMessageEmail, setSelectedMessageEmail] = useState<string | null>(null);
+  const [selectedMessageEmail, setSelectedMessageEmail] = useState<
+    string | null
+  >(null);
   const [messageQuery, setMessageQuery] = useState('');
-  const [messageResponse, setMessageResponse] = useState<{ id: string; response: string; context_data: string } | null>(null);
+  const [messageResponse, setMessageResponse] = useState<{
+    id: string;
+    response: string;
+    context_data: string;
+  } | null>(null);
   const [isMessageLoading, setIsMessageLoading] = useState(false);
   const [groupTitle, setGroupTitle] = useState('Email Group Analysis');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  
+
   const handleAddEmail = useCallback(() => {
     setEmailItems((prev) => [...prev, { id: v4(), text: '' }]);
   }, []);
@@ -62,31 +79,40 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
     setEmailItems((prev) => prev.filter((email) => email.id !== id));
   }, []);
 
-  const handleUpdateEmail = useCallback((params: { 
-    id: string, 
-    text?: string,
-    file?: File,
-    selectedType?: EmailContentType,
-  }) => {
-    const { text, file, selectedType } = params;
-    setEmailItems((prev) => prev.map((email) => {
-      return email.id !== params.id ? email : { 
-        ...email, 
-        ...(selectedType === 'text' ? { text } : { file }),
-        selectedType,
-      }
-    }));
-  }, []);
+  const handleUpdateEmail = useCallback(
+    (params: {
+      id: string;
+      text?: string;
+      file?: File;
+      selectedType?: EmailContentType;
+    }) => {
+      const { text, file, selectedType } = params;
+      setEmailItems((prev) =>
+        prev.map((email) => {
+          return email.id !== params.id
+            ? email
+            : {
+                ...email,
+                ...(selectedType === 'text' ? { text } : { file }),
+                selectedType,
+              };
+        })
+      );
+    },
+    []
+  );
 
-  const handleChangeEmailContentType = useCallback((params: {
-    id: string,
-    selectedType: EmailContentType
-  }) => {
-    const { id, selectedType } = params;
-    setEmailItems((prev) => prev.map((email) => {
-      return email.id !== id ? email : { ...email, selectedType };
-    }));
-  }, []);
+  const handleChangeEmailContentType = useCallback(
+    (params: { id: string; selectedType: EmailContentType }) => {
+      const { id, selectedType } = params;
+      setEmailItems((prev) =>
+        prev.map((email) => {
+          return email.id !== id ? email : { ...email, selectedType };
+        })
+      );
+    },
+    []
+  );
 
   // Poll for status every 3 seconds when submitted
   useEffect(() => {
@@ -162,27 +188,30 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
     }
   }, []);
 
-  const handleSendMessage = useCallback(async (emailId: string, query: string) => {
-    if (!query.trim()) return;
+  const handleSendMessage = useCallback(
+    async (emailId: string, query: string) => {
+      if (!query.trim()) return;
 
-    setIsMessageLoading(true);
-    try {
-      const result = await emailsClient.answerEmail(emailId, query);
-      if (!result) {
-        throw new Error('Failed to send message');
+      setIsMessageLoading(true);
+      try {
+        const result = await emailsClient.answerEmail(emailId, query);
+        if (!result) {
+          throw new Error('Failed to send message');
+        }
+        setMessageResponse(result);
+      } catch (error) {
+        console.error('Failed to send message:', error);
+        setMessageResponse({
+          id: emailId,
+          response: 'Error sending message. Please try again.',
+          context_data: '',
+        });
+      } finally {
+        setIsMessageLoading(false);
       }
-      setMessageResponse(result);
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      setMessageResponse({
-        id: emailId,
-        response: 'Error sending message. Please try again.',
-        context_data: ''
-      });
-    } finally {
-      setIsMessageLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
 
   const handleSubmitGroupForAnalysis = useCallback(async () => {
     console.log('Submit group for analysis', emailItems);
@@ -211,7 +240,9 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
         <div className="mb-4 p-4 bg-muted border rounded-lg">
           <div className="flex items-center gap-3">
             <div className="size-4 text-primary animate-spin">⏳</div>
-            <span className="text-sm text-foreground">Processing analysis... This may take a few moments.</span>
+            <span className="text-sm text-foreground">
+              Processing analysis... This may take a few moments.
+            </span>
           </div>
         </div>
       )}
@@ -221,7 +252,10 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
         <div className="mb-4 p-4 bg-secondary border rounded-lg">
           <div className="flex items-center gap-3">
             <Icon icon="CHECK" className="size-4 text-primary" />
-            <span className="text-sm text-foreground">Analysis complete! Click the analysis button next to each email to view results.</span>
+            <span className="text-sm text-foreground">
+              Analysis complete! Click the analysis button next to each email to
+              view results.
+            </span>
           </div>
         </div>
       )}
@@ -254,7 +288,9 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
 
       <div className="flex flex-col gap-4 grow overflow-y-auto">
         {emailItems.map((email) => {
-          const analysis = analysisData.find(a => a.email_raw.id === email.id);
+          const analysis = analysisData.find(
+            (a) => a.email_raw.id === email.id
+          );
 
           return (
             <div
@@ -266,12 +302,22 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
                   key={email.id}
                   className="grow"
                   onTextChange={(text) => {
-                    handleUpdateEmail({ id: email.id, text, selectedType: 'text' });
+                    handleUpdateEmail({
+                      id: email.id,
+                      text,
+                      selectedType: 'text',
+                    });
                   }}
                   onFileChange={(file) => {
-                    handleUpdateEmail({ id: email.id, file: file ?? undefined, selectedType: 'file' });
+                    handleUpdateEmail({
+                      id: email.id,
+                      file: file ?? undefined,
+                      selectedType: 'file',
+                    });
                   }}
-                  onSelectedTypeChanged={(selectedType) => handleChangeEmailContentType({ id: email.id, selectedType })}
+                  onSelectedTypeChanged={(selectedType) =>
+                    handleChangeEmailContentType({ id: email.id, selectedType })
+                  }
                 />
               </div>
 
@@ -286,7 +332,9 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
                     onClick={() => setSelectedAnalysis(analysis)}
                     title="View analysis"
                   >
-                    <span className="size-4 flex items-center justify-center">👁</span>
+                    <span className="size-4 flex items-center justify-center">
+                      👁
+                    </span>
                   </Button>
                 )}
 
@@ -304,7 +352,11 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
                     title="Send message"
                     disabled={isMessageLoading}
                   >
-                    <span className="size-4 flex items-center justify-center">{isMessageLoading && selectedMessageEmail === email.id ? "⏳" : "💬"}</span>
+                    <span className="size-4 flex items-center justify-center">
+                      {isMessageLoading && selectedMessageEmail === email.id
+                        ? '⏳'
+                        : '💬'}
+                    </span>
                   </Button>
                 )}
 
@@ -318,7 +370,11 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
                     title="View graph"
                     disabled={isGraphLoading}
                   >
-                    <span className="size-4 flex items-center justify-center">{isGraphLoading && selectedGraphEmail === email.id ? "⏳" : "📊"}</span>
+                    <span className="size-4 flex items-center justify-center">
+                      {isGraphLoading && selectedGraphEmail === email.id
+                        ? '⏳'
+                        : '📊'}
+                    </span>
                   </Button>
                 )}
 
@@ -329,7 +385,7 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
                   className="size-8 shrink-0"
                   onClick={() => handleRemoveEmail(email.id)}
                 >
-                  <Icon icon="TRASH" className="size-4"/>
+                  <Icon icon="TRASH" className="size-4" />
                 </Button>
               </div>
             </div>
@@ -337,7 +393,7 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
         })}
         <div className="flex w-full justify-end">
           <Button
-            variant={"secondary"}
+            variant={'secondary'}
             className="flex items-center gap-1 text-white"
             onClick={handleAddEmail}
           >
@@ -345,7 +401,7 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
           </Button>
         </div>
       </div>
-      
+
       <div className="mt-3">
         <Button
           className="flex items-center gap-1 text-white"
@@ -356,7 +412,10 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
       </div>
 
       {/* Analysis Dialog */}
-      <Dialog open={!!selectedAnalysis} onOpenChange={(open) => !open && setSelectedAnalysis(null)}>
+      <Dialog
+        open={!!selectedAnalysis}
+        onOpenChange={(open) => !open && setSelectedAnalysis(null)}
+      >
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Email Analysis</DialogTitle>
@@ -366,18 +425,24 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
             <div className="grid grid-cols-1 gap-2">
               <div>
                 <span className="font-medium text-primary">Sender:</span>
-                <p className="text-muted-foreground mt-1">{selectedAnalysis?.analysis.sender}</p>
+                <p className="text-muted-foreground mt-1">
+                  {selectedAnalysis?.analysis.sender}
+                </p>
               </div>
               <div>
                 <span className="font-medium text-primary">Recipients:</span>
-                <p className="text-muted-foreground mt-1">{selectedAnalysis?.analysis.recipients.join(', ')}</p>
+                <p className="text-muted-foreground mt-1">
+                  {selectedAnalysis?.analysis.recipients.join(', ')}
+                </p>
               </div>
             </div>
 
             {selectedAnalysis?.analysis.summary && (
               <div>
                 <span className="font-medium text-primary">Summary:</span>
-                <p className="text-muted-foreground mt-2 leading-relaxed">{selectedAnalysis.analysis.summary}</p>
+                <p className="text-muted-foreground mt-2 leading-relaxed">
+                  {selectedAnalysis.analysis.summary}
+                </p>
               </div>
             )}
           </div>
@@ -385,7 +450,10 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
       </Dialog>
 
       {/* Graph Dialog */}
-      <Dialog open={!!selectedGraphEmail} onOpenChange={(open) => !open && setSelectedGraphEmail(null)}>
+      <Dialog
+        open={!!selectedGraphEmail}
+        onOpenChange={(open) => !open && setSelectedGraphEmail(null)}
+      >
         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Email Graph</DialogTitle>
@@ -396,7 +464,9 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
               <div className="flex items-center justify-center py-8">
                 <div className="flex items-center gap-3">
                   <div className="size-4 text-primary animate-spin">⏳</div>
-                  <span className="text-sm text-foreground">Loading graph data...</span>
+                  <span className="text-sm text-foreground">
+                    Loading graph data...
+                  </span>
                 </div>
               </div>
             ) : (
@@ -411,7 +481,10 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
       </Dialog>
 
       {/* Message Dialog */}
-      <Dialog open={!!selectedMessageEmail} onOpenChange={(open) => !open && setSelectedMessageEmail(null)}>
+      <Dialog
+        open={!!selectedMessageEmail}
+        onOpenChange={(open) => !open && setSelectedMessageEmail(null)}
+      >
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Send Message</DialogTitle>
@@ -443,7 +516,10 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
                   <Button
                     onClick={() => {
                       if (selectedMessageEmail && messageQuery.trim()) {
-                        handleSendMessage(selectedMessageEmail, messageQuery.trim());
+                        handleSendMessage(
+                          selectedMessageEmail,
+                          messageQuery.trim()
+                        );
                       }
                     }}
                     disabled={!messageQuery.trim() || isMessageLoading}
@@ -464,7 +540,9 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
                 </div>
                 {messageResponse.context_data && (
                   <div>
-                    <h4 className="font-medium text-primary mb-2">Context Data:</h4>
+                    <h4 className="font-medium text-primary mb-2">
+                      Context Data:
+                    </h4>
                     <div className="bg-muted p-4 rounded-lg">
                       <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
                         {messageResponse.context_data}
@@ -489,4 +567,4 @@ export const EmailAnalysisGroup: React.FC<EmailAnalysisGroupProps> = ({
       </Dialog>
     </div>
   );
-}
+};

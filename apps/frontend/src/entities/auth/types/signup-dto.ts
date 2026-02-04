@@ -5,4 +5,4 @@ export type SignUpDto = {
 
 export type SignUpResponseDto = {
   success: boolean;
-}
+};

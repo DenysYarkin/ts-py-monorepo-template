@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react';
 import { useUnit } from 'effector-react';
 import { Button } from '@shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import {
-  $loginStore,
-  submitLoginFormFx,
-} from '@/entities/auth/store';
+import { $loginStore, submitLoginFormFx } from '@/entities/auth/store';
 
 type LoginFormProps = {
   loginSuccessCallback?: () => void;
@@ -15,9 +12,7 @@ type LoginFormProps = {
 
 export function LoginForm(props: LoginFormProps) {
   const [loginStore] = useUnit([$loginStore]);
-  const [submitForm] = useUnit([
-    submitLoginFormFx,
-  ]);
+  const [submitForm] = useUnit([submitLoginFormFx]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -47,14 +42,11 @@ export function LoginForm(props: LoginFormProps) {
         />
 
         <div>
-          <Button 
-            onClick={() => submitForm({ username, password })}
-          >
+          <Button onClick={() => submitForm({ username, password })}>
             Login
           </Button>
         </div>
       </div>
-
     </div>
   );
 }

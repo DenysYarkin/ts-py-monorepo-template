@@ -5,4 +5,4 @@ export type LoginDto = {
 
 export type LoginResponseDto = {
   success: boolean;
-}
+};

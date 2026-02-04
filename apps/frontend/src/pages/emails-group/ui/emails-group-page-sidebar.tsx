@@ -1,9 +1,9 @@
-import { $groups } from "@/entities/emails/store/groups-stores";
-import { Button } from "@/shared/components/ui/button";
-import { Icon } from "@/shared/ui";
-import classNames from "classnames";
-import { useUnit } from "effector-react";
-import { redirect } from "next/navigation";
+import { $groups } from '@/entities/emails/store/groups-stores';
+import { Button } from '@/shared/components/ui/button';
+import { Icon } from '@/shared/ui';
+import classNames from 'classnames';
+import { useUnit } from 'effector-react';
+import { redirect } from 'next/navigation';
 
 type EmailsGroupPageSidebarProps = {
   className?: string | string[];
@@ -20,7 +20,12 @@ export const EmailsGroupPageSidebar = (props: EmailsGroupPageSidebarProps) => {
   };
 
   return (
-    <div className={classNames("border-r border-border h-full w-64 bg-background", className)}>
+    <div
+      className={classNames(
+        'border-r border-border h-full w-64 bg-background',
+        className
+      )}
+    >
       {/* Header */}
       <div className="p-6 border-b border-border">
         <Button onClick={props.onNewGroupClick} className="w-full gap-2">
@@ -41,12 +46,14 @@ export const EmailsGroupPageSidebar = (props: EmailsGroupPageSidebarProps) => {
               key={group.group_id}
               onClick={() => handleGroupClick(group.group_id)}
               className={classNames(
-                "w-full text-left px-4 py-3 rounded-lg transition-all duration-200",
-                "hover:bg-accent hover:text-accent-foreground hover:shadow-sm",
-                "focus:bg-accent focus:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+                'w-full text-left px-4 py-3 rounded-lg transition-all duration-200',
+                'hover:bg-accent hover:text-accent-foreground hover:shadow-sm',
+                'focus:bg-accent focus:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
                 {
-                  "bg-primary text-primary-foreground shadow-sm": props.currentGroupId === group.group_id,
-                  "bg-card text-card-foreground border border-border hover:bg-accent/50": props.currentGroupId !== group.group_id,
+                  'bg-primary text-primary-foreground shadow-sm':
+                    props.currentGroupId === group.group_id,
+                  'bg-card text-card-foreground border border-border hover:bg-accent/50':
+                    props.currentGroupId !== group.group_id,
                 }
               )}
             >
@@ -56,7 +63,10 @@ export const EmailsGroupPageSidebar = (props: EmailsGroupPageSidebarProps) => {
                   <span className="font-medium truncate">{group.name}</span>
                 </div>
                 {props.currentGroupId === group.group_id && (
-                  <Icon icon="CHECK" className="size-4 text-primary-foreground" />
+                  <Icon
+                    icon="CHECK"
+                    className="size-4 text-primary-foreground"
+                  />
                 )}
               </div>
             </button>
@@ -65,4 +75,4 @@ export const EmailsGroupPageSidebar = (props: EmailsGroupPageSidebarProps) => {
       </div>
     </div>
   );
-}
+};

@@ -22,7 +22,6 @@ export const submitLoginFormFx = createEffect(async (payload: LoginDto) => {
   }
 });
 
-
 $loginStore.on(submitLoginFormFx.doneData, (state, { success }) => {
   return {
     ...state,

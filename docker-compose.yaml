@@ -32,6 +32,5 @@ services:
       - db
       - chroma_db
 
-      
 volumes:
   postgres_data:

@@ -13,9 +13,7 @@ export function SignUpPage() {
       )}
     >
       <div className="w-[400px] h-[200px] bg-secondary">
-        <SignUpForm 
-          signupSuccessCallback={() => redirect('/groups')} 
-        />
+        <SignUpForm signupSuccessCallback={() => redirect('/groups')} />
       </div>
     </div>
   );

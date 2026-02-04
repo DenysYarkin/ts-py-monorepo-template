@@ -2,7 +2,6 @@
   "name": "api",
   "scripts": {
     "api:dev": "uvicorn main:app",
-
     "migrations:run": "alembic upgrade head",
     "migrations:revert:last": "alembic downgrade -1",
     "migrations:create:auto": "alembic revision --autogenerate",
