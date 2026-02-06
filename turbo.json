@@ -26,7 +26,7 @@
       "cache": false,
       "persistent": true
     },
-    "web:dev": {
+    "frontend:dev": {
       "cache": false,
       "persistent": true
     }

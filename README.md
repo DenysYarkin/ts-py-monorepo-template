@@ -1,42 +1,30 @@
-# 🚀🚀 InboxLens 🚀🚀
+# Workflow
 
-**Next-Gen Email Analysis (LLM-Powered) ✨**
+## Commands
 
-InboxLens helps you extract insights from emails with AI-powered intelligence, RAG tracking, and timeline visibility.
+Starting apps:
 
-## Features
+- `npx turbo run frontend:dev` -- `frontend` development
+- `npx turbo run api:dev` -- `api` development
 
-- **📄 Smart Metadata Extraction** – Capture sender, recipients, subject, and topics effortlessly
-- **🤖 AI-Powered Insights** – Summarize conversations, classify emails, and auto-tag key information
-- **🚀 RAG Status at a Glance** – Instantly track priorities and urgency
-- **⏳ Timeline & Backlog Intelligence** – Monitor conversation changes, pending actions, and follow-ups
+Creating `alembic` migrations:
 
-## Setup
+- `npx turbo run migrations:create -- -m "<description>"` -- create a new _empty_ migration
+- `npx turbo run migrations:create:auto -- -m "<description>"` -- create a new migration with alembic's `--autogenerate` option, that would automatically convert changes of the data models in code into a migration.
+- `npx turbo run migrations:run` -- run all the migrations in queue
+- `npx turbo run migrations:revert:last`
+  **Note!**: `description` must be written as a short sentence to maintain save style across migrations names. For example, `npx turbo run migrations:create -- -m "add username to users table"`.
 
-### Database & Backend
+## Frontend
 
-Launch the database and backend:
+### `shadcn/ui` components installation
 
-```bash
-docker compose up -d
+`shadcn/ui` configuration is bound to the `frontend` app since it's supposed to be the only web application in the monorepo.
+To install a new shadcn component, navigate to `apps/frontend` and run the command for installation:
+
+```sh
+cd apps/frontend
+npx shadcn@latest add <component name>
 ```
 
-Run migrations once the DB is ready:
-
-```bash
-alembic upgrade head
-```
-
-### Frontend
-
-Build and start the frontend:
-
-```bash
-cd frontend
-npm run build
-npm run start
-```
-
-## License
-
-Check teh license [here](LICENSE).
+All the installed components are stored at `apps/frontend/src/shared/components/ui`.
