@@ -1,0 +1,43 @@
+UserIDObj:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: integer
+      description: User ID
+
+UserProfile:
+  type: object
+  required:
+    - id
+    - username
+    - message
+  properties:
+    id:
+      type: integer
+      description: User ID
+      example: 1
+    username:
+      type: string
+      description: Username
+      example: "john_doe"
+    message:
+      type: string
+      description: Welcome message
+      example: "Welcome back!"
+
+HealthCheckResponse:
+  type: object
+  required:
+    - status
+    - message
+  properties:
+    status:
+      type: string
+      description: Health status
+      example: "ok"
+    message:
+      type: string
+      description: Additional information
+      example: "Go to /docs to test login"

@@ -1,0 +1,9 @@
+Error:
+  type: object
+  required:
+    - detail
+  properties:
+    detail:
+      type: string
+      description: Error message
+      example: "Username already registered"

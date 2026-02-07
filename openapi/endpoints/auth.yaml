@@ -1,0 +1,69 @@
+/auth/signup:
+  post:
+    tags:
+      - Authentication
+    summary: Sign up a new user
+    description: Create a new user account and automatically log them in
+    operationId: signup
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/auth.yaml#/UserAuth'
+    responses:
+      '201':
+        description: User created successfully
+        headers:
+          Set-Cookie:
+            description: Session cookie
+            schema:
+              type: string
+              example: 'connect.sid=<session_id>; HttpOnly; Path=/; SameSite=lax; Max-Age=86400'
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/auth.yaml#/LoginResponse'
+      '400':
+        description: Username already exists
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/shared.yaml#/Error'
+            example:
+              detail: "Username already registered"
+
+/auth/login:
+  post:
+    tags:
+      - Authentication
+    summary: Log in an existing user
+    description: Authenticate a user and create a session
+    operationId: login
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/auth.yaml#/UserAuth'
+    responses:
+      '200':
+        description: Login successful
+        headers:
+          Set-Cookie:
+            description: Session cookie
+            schema:
+              type: string
+              example: 'connect.sid=<session_id>; HttpOnly; Path=/; SameSite=lax; Max-Age=86400'
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/auth.yaml#/LoginResponse'
+      '401':
+        description: Invalid credentials
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/shared.yaml#/Error'
+            example:
+              detail: "Incorrect username or password"

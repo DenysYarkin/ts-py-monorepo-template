@@ -1,0 +1,38 @@
+/users/me:
+  get:
+    tags:
+      - Users
+    summary: Get current user profile
+    description: Retrieve the profile of the currently authenticated user
+    operationId: getCurrentUser
+    security:
+      - cookieAuth: []
+    responses:
+      '200':
+        description: User profile retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/user.yaml#/UserProfile'
+      '401':
+        description: Not authenticated or invalid session
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/shared.yaml#/Error'
+        examples:
+          not_authenticated:
+            value:
+              detail: "Not authenticated"
+          invalid_session:
+            value:
+              detail: "Invalid session"
+          session_expired:
+            value:
+              detail: "Session expired"
+          malformed_session:
+            value:
+              detail: "Malformed session data"
+          user_not_found:
+            value:
+              detail: "User not found"

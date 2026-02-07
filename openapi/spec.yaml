@@ -1,0 +1,40 @@
+openapi: 3.1.0
+info:
+  title: My Project API
+  version: 1.0.0
+  description: API for user authentication and profile management
+  contact:
+    name: API Support
+    email: support@example.com
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.example.com
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: Users
+    description: User profile endpoints
+  - name: Health
+    description: Health check endpoint
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+      description: Cookie-based session authentication. The cookie is set by the server during login/signup.
+
+paths:
+  /:
+    $ref: './endpoints/health.yaml#/~1'
+  /auth/signup:
+    $ref: './endpoints/auth.yaml#/~1auth~1signup'
+  /auth/login:
+    $ref: './endpoints/auth.yaml#/~1auth~1login'
+  /users/me:
+    $ref: './endpoints/users.yaml#/~1users~1me'

@@ -1,19 +1,11 @@
 from database.db import Base
-from sqlalchemy import String, DateTime, JSON, Column
-
-
-# sessions
-# sid non null primary
-# sess json not null
-# expire timestamp not null
+from sqlalchemy import String, DateTime, JSON
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class Session(Base):
     __tablename__ = "sessions"
 
-    sid = Column(String, primary_key=True)
-
-    sess = Column(JSON, nullable=False)
-
-    expire = Column(DateTime(timezone=True), nullable=False)
-
+    sid: Mapped[str] = mapped_column(String, primary_key=True)
+    sess: Mapped[dict] = mapped_column(JSON, nullable=False)
+    expire: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=False)

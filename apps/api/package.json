@@ -5,6 +5,7 @@
     "migrations:run": "alembic upgrade head",
     "migrations:revert:last": "alembic downgrade -1",
     "migrations:create:auto": "alembic revision --autogenerate",
-    "migrations:create": "alembic revision"
+    "migrations:create": "alembic revision",
+    "generate:client:py": "bash scripts/generate-types.sh"
   }
 }

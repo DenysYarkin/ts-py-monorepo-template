@@ -29,6 +29,10 @@
     "frontend:dev": {
       "cache": false,
       "persistent": true
+    },
+    "generate:client:py": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

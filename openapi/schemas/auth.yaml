@@ -1,0 +1,64 @@
+UserAuth:
+  type: object
+  required:
+    - username
+    - password
+  properties:
+    username:
+      type: string
+      description: Username for the account
+      minLength: 1
+    password:
+      type: string
+      description: Password for the account
+      format: password
+      minLength: 1
+
+CookieObj:
+  type: object
+  properties:
+    originalMaxAge:
+      type: integer
+      nullable: true
+      description: Original max age in milliseconds
+    expires:
+      type: string
+      format: date-time
+      nullable: true
+      description: Expiration date of the cookie
+    httpOnly:
+      type: boolean
+      default: true
+      description: Whether the cookie is HTTP only
+    path:
+      type: string
+      default: "/"
+      description: Path for which the cookie is valid
+
+UserIDObj:
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      type: integer
+      description: User ID
+
+PassportObj:
+  type: object
+  required:
+    - user
+  properties:
+    user:
+      $ref: './user.yaml#/UserIDObj'
+
+LoginResponse:
+  type: object
+  required:
+    - cookie
+    - passport
+  properties:
+    cookie:
+      $ref: '#/CookieObj'
+    passport:
+      $ref: '#/PassportObj'
