@@ -19,6 +19,14 @@ export default [
   ...tseslint.configs.recommended,
 
   {
+    files: ["apps/frontend/generated/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
+    },
+  },
+
+  {
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",

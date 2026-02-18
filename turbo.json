@@ -1,14 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
-    "generate:py": {
-      "inputs": ["../../specs/openapi.yaml"],
-      "outputs": ["models.py"],
+    "generate:client:py": {
+      "inputs": ["../../openapi/**"],
+      "outputs": ["schemas/generated.py"],
       "cache": true
     },
-    "generate:ts": {
-      "inputs": ["../../specs/openapi.yaml"],
-      "outputs": ["index.ts"],
+    "generate:client:ts": {
+      "inputs": ["../../openapi/**"],
+      "outputs": ["generated/api/**"],
       "cache": true
     },
 
@@ -18,7 +18,7 @@
     "migrations:create": { "cache": false },
 
     "build": {
-      "dependsOn": ["generate:py", "generate:ts", "^build"],
+      "dependsOn": ["generate:client:py", "generate:client:ts", "^build"],
       "outputs": [".next/**", "dist/**"]
     },
 
@@ -27,10 +27,6 @@
       "persistent": true
     },
     "frontend:dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "generate:client:py": {
       "cache": false,
       "persistent": true
     }
