@@ -4,23 +4,26 @@ import { useEffect, useState } from 'react';
 import { useUnit } from 'effector-react';
 import { Button } from '@shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { $loginStore, submitLoginFormFx } from '@/entities/auth/store';
+import { $authorizedUser, submitLoginFormFx } from '@/entities/auth/store';
 
 type LoginFormProps = {
   loginSuccessCallback?: () => void;
 };
 
 export function LoginForm(props: LoginFormProps) {
-  const [loginStore] = useUnit([$loginStore]);
-  const [submitForm] = useUnit([submitLoginFormFx]);
+  const [authorizedUser, submitForm] = useUnit([
+    $authorizedUser,
+    submitLoginFormFx,
+  ]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { loginSuccessCallback } = props;
 
   useEffect(() => {
-    if (loginStore.loginSuccess) {
-      props.loginSuccessCallback?.();
+    if (authorizedUser !== null) {
+      loginSuccessCallback?.();
     }
-  }, [loginStore.loginSuccess, props]);
+  }, [authorizedUser, loginSuccessCallback]);
 
   return (
     <div className="w-full h-full p-4 rounded">

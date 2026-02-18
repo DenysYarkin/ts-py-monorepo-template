@@ -4,23 +4,26 @@ import { useEffect, useState } from 'react';
 import { useUnit } from 'effector-react';
 import { Button } from '@shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { $signUpStore, submitSignUpFormFx } from '@/entities/auth/store';
+import { $authorizedUser, submitSignUpFormFx } from '@/entities/auth/store';
 
 type SignUpFormProps = {
   signupSuccessCallback?: () => void;
 };
 
 export function SignUpForm(props: SignUpFormProps) {
-  const [signUpStore] = useUnit([$signUpStore]);
-  const [submitForm] = useUnit([submitSignUpFormFx]);
+  const [authorizedUser, submitForm] = useUnit([
+    $authorizedUser,
+    submitSignUpFormFx,
+  ]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const { signupSuccessCallback } = props;
 
   useEffect(() => {
-    if (signUpStore.signUpSuccess) {
-      props.signupSuccessCallback?.();
+    if (authorizedUser !== null) {
+      signupSuccessCallback?.();
     }
-  }, [props, props.signupSuccessCallback, signUpStore.signUpSuccess]);
+  }, [authorizedUser, signupSuccessCallback]);
 
   return (
     <div className="w-full h-full">
