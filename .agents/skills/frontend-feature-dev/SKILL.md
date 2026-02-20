@@ -3,13 +3,28 @@ name: frontend-feature-dev
 description: Use this skill when developing features at frontend (`frontend` app) or working with any React components (and any other UI code).
 ---
 
-# General Guidelines
+# Guidelines
 
-We use `shadcn` library for the frontend UI components. Installed `shadcn` components are installed at `apps/frontend/src/shared/components/ui/`. You must use those component when they are relevant. For example, if you need a button in some component, you must use `<Button />` from `ui` package instead basic button or any other custom button components.
+1. We use `shadcn` library for the frontend UI components. Installed `shadcn` components are installed at `apps/frontend/src/shared/components/ui/`. You must use those component when they are relevant. For example, if you need a button in some component, you must use `<Button />` from `ui` package instead basic button or any other custom button components.
+2. You must use custom `shadcn` tailwind colors classes. Try to avoid using standard tailwind colors like `neutral-500`, `red-100`, etc. Instead you must use existing custom classes like `bg-accent`, `text-accent-foreground`, `border-border`, etc. DO NOT create new custom color classes, because we already have existing classes for all needed colors.
+3. For partially opaque colors, for example, hover background color of context menu button, use `muted/60` color.
+4. `apps/frontend/src/shared/components` directory is meant EXCLUSIVELY for reusable components like buttons, forms, etc. Mainly for the ones installed with `shadcn/ui` tool. If you need to create a new component that is not reusable, create it in the relevant feature or enttity directory.
 
-You must use custom `shadcn` tailwind colors classes. Try to avoid using standard tailwind colors like `neutral-500`, `red-100`, etc. Instead you must use existing custom classes like `bg-accent`, `text-accent-foreground`, `border-border`, etc. DO NOT create new custom color classes, because we already have existing classes for all needed colors.
+## Bad Practices
 
-For partially opaque colors, for example, hover background color of context menu button, use `muted/60` color.
+Here are some examples of things that must be avoided in this project while making changes to the frontend:
+
+1. DO NOT use `any` type.
+2. DO NOT use `useUnit` to get the status of the effect. For example:
+
+```tsx
+const [isLoadingUser, isLoggingOut] = useUnit([
+  fetchAuthorizedUserFx.pending,
+  submitLogoutFx.pending,
+]);
+```
+
+In such cases, you must store the status in the related store. For example, `fetchStatus: 'not_loaded' | 'loading' | 'loaded' | 'error'`
 
 # Colors
 

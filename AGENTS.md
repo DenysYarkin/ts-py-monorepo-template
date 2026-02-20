@@ -34,8 +34,22 @@ Clients generation commands:
 - `npx turbo run generate:client:py` -- generate Python types
 - `npx turbo run generate:client:ts` -- generate Python types
 
-# Guidelines
+# General guidelines
 
 1. All the changes made to the codebase must ensure that the project remains maintainable and scalable.
 2. DO NOT make any manual changes to the generated types (both Python and TypeScript). Instead, if you need to change the types, change the openapi specification and generate the types again.
 3. DO NOT run commands for starting the project. Instead, if something has to be manually tested, ask the user to do it.
+4. KISS -- keep it simple, stupid. Do not overengineer, keep things simple and maintainable.
+
+## Feature development flow
+
+1. Check out the backend first. If the required logic is not implemented there yet -- do it. If user explicitly told that backend part is already implemented -- skip this part.
+2. Generate TypeScript client to ensure that the frontend uses the latest version of the API.
+3. Implement the feature on the frontend.
+   When making any changes to the frontend or backend, make sure to not break the existing logic and to follow the existing code style and guidelines set up in the codebase.
+
+## General bad practices
+
+Here are some examples of things that must be avoided in this project
+
+1. NEVER change generated files, like the ones in `apps/frontend/generated/` and `apps/api/schemas/`, manually.
