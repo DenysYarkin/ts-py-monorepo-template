@@ -4,17 +4,15 @@ import { useEffect, useState } from 'react';
 import { useUnit } from 'effector-react';
 import { Button } from '@shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { $authorizedUser, submitSignUpFormFx } from '@/entities/auth/store';
+import { $authState, submitSignUpFormFx } from '@/entities/auth/store';
 
 type SignUpFormProps = {
   signupSuccessCallback?: () => void;
 };
 
 export function SignUpForm(props: SignUpFormProps) {
-  const [authorizedUser, submitForm] = useUnit([
-    $authorizedUser,
-    submitSignUpFormFx,
-  ]);
+  const [authState, submitForm] = useUnit([$authState, submitSignUpFormFx]);
+  const authorizedUser = authState.user;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { signupSuccessCallback } = props;

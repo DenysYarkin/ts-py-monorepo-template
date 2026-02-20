@@ -36,5 +36,7 @@ paths:
     $ref: './endpoints/auth.yaml#/~1auth~1signup'
   /auth/login:
     $ref: './endpoints/auth.yaml#/~1auth~1login'
+  /auth/logout:
+    $ref: './endpoints/auth.yaml#/~1auth~1logout'
   /users/me:
     $ref: './endpoints/users.yaml#/~1users~1me'

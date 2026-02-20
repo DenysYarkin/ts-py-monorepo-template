@@ -67,3 +67,16 @@
               $ref: '../schemas/shared.yaml#/Error'
             example:
               detail: "Incorrect username or password"
+
+/auth/logout:
+  post:
+    tags:
+      - Authentication
+    summary: Log out the current user
+    description: Invalidate current cookie session and clear session cookie
+    operationId: logout
+    security:
+      - cookieAuth: []
+    responses:
+      '204':
+        description: Logout successful

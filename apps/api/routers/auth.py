@@ -1,10 +1,10 @@
 import uuid
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from sqlalchemy.orm import Session as DBSession
 
 # Imports from your project structure
-from database.models import User, Session
+from database.models import Session as SessionModel, User
 from schemas.generated import UserAuth, LoginResponse, CookieObj, PassportObj, UserIDObj, Error
 from utils.security import verify_password, get_password_hash
 from dependencies import get_db
@@ -18,7 +18,11 @@ router = APIRouter(
     prefix='/auth'
 )
 
-def create_session_for_user(user_id: int, response: Response, session: Session) -> LoginResponse:
+def create_session_for_user(
+    user_id: int,
+    response: Response,
+    session: DBSession,
+) -> LoginResponse:
     """
     Creates a DB session, sets the cookie, and returns the Passport JSON.
     Used by both Login and Signup.
@@ -43,7 +47,7 @@ def create_session_for_user(user_id: int, response: Response, session: Session) 
     session_id = str(uuid.uuid4())
     expiration = datetime.now(timezone.utc) + timedelta(hours=SESSION_EXPIRATION_HOURS)
 
-    new_session = Session(
+    new_session = SessionModel(
         sid=session_id,
         sess=session_content,
         expire=expiration
@@ -74,7 +78,11 @@ def create_session_for_user(user_id: int, response: Response, session: Session) 
     )
 
 @router.post("/signup", status_code=201, response_model=LoginResponse, responses={400: {"model": Error}})
-def signup(user_data: UserAuth, response: Response, session: Session = Depends(get_db)) -> LoginResponse:
+def signup(
+    user_data: UserAuth,
+    response: Response,
+    session: DBSession = Depends(get_db),
+) -> LoginResponse:
     # 1. Check if username exists
     if session.query(User).filter_by(username=user_data.username).first():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already registered")
@@ -93,7 +101,11 @@ def signup(user_data: UserAuth, response: Response, session: Session = Depends(g
     return login_response
 
 @router.post("/login", response_model=LoginResponse, responses={401: {"model": Error}})
-def login(user_data: UserAuth, response: Response, session: Session = Depends(get_db)) -> LoginResponse:
+def login(
+    user_data: UserAuth,
+    response: Response,
+    session: DBSession = Depends(get_db),
+) -> LoginResponse:
     user = session.query(User).filter_by(username=user_data.username).first()
     if not user or not verify_password(user_data.password.get_secret_value(), user.pass_hash):
         raise HTTPException(
@@ -106,3 +118,22 @@ def login(user_data: UserAuth, response: Response, session: Session = Depends(ge
     session.commit()
     return login_response
 
+
+@router.post("/logout", status_code=204)
+def logout(request: Request, session: DBSession = Depends(get_db)) -> Response:
+    session_id = request.cookies.get("connect.sid")
+
+    if session_id:
+        db_session = session.query(SessionModel).filter_by(sid=session_id).first()
+        if db_session:
+            session.delete(db_session)
+
+    session.commit()
+
+    response = Response(status_code=status.HTTP_204_NO_CONTENT)
+    response.delete_cookie(
+        key="connect.sid",
+        path="/",
+        samesite="lax",
+    )
+    return response

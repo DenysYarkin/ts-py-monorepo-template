@@ -6,6 +6,8 @@ export type ClientOptions = {
 
 export type Auth1Auth1Login = unknown;
 
+export type Auth1Auth1Logout = unknown;
+
 export type Auth1Auth1Signup = unknown;
 
 export type Health1 = unknown;
@@ -157,6 +159,22 @@ export type LoginResponses = {
 };
 
 export type LoginResponse = LoginResponses[keyof LoginResponses];
+
+export type LogoutData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/auth/logout';
+};
+
+export type LogoutResponses = {
+  /**
+   * Logout successful
+   */
+  204: void;
+};
+
+export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
 
 export type GetCurrentUserData = {
   body?: never;

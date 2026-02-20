@@ -2,55 +2,107 @@ import { createEffect, createStore } from 'effector';
 import {
   getCurrentUserGenReq,
   loginGenReq,
+  logoutGenReq,
   signupGenReq,
   type LoginData,
   type SignupData,
   type UserUserProfile,
 } from '@generated/api';
+import type { LoadingStatus } from '@/shared/lib/types';
 import { mainApiClient } from '@/shared/api/main-api-client';
 
-export const $authorizedUser = createStore<UserUserProfile | null>(null);
+type AuthState = {
+  user: UserUserProfile | null;
+  loadStatus: LoadingStatus;
+};
+
+export const $authState = createStore<AuthState>({
+  user: null,
+  loadStatus: 'not_loaded',
+});
 
 export const submitLoginFormFx = createEffect(
   async (payload: LoginData['body']) => {
-    try {
-      await loginGenReq({
-        client: mainApiClient,
-        body: payload,
-        throwOnError: true,
-      });
+    await loginGenReq({
+      client: mainApiClient,
+      body: payload,
+      throwOnError: false,
+    });
 
-      return await getCurrentUserGenReq({
+    return (
+      (await getCurrentUserGenReq({
         client: mainApiClient,
-        throwOnError: true,
-      });
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+        throwOnError: false,
+      })) ?? null
+    );
   }
 );
 
 export const submitSignUpFormFx = createEffect(
   async (payload: SignupData['body']) => {
-    try {
-      await signupGenReq({
-        client: mainApiClient,
-        body: payload,
-        throwOnError: true,
-      });
+    await signupGenReq({
+      client: mainApiClient,
+      body: payload,
+      throwOnError: false,
+    });
 
-      return await getCurrentUserGenReq({
+    return (
+      (await getCurrentUserGenReq({
         client: mainApiClient,
-        throwOnError: true,
-      });
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+        throwOnError: false,
+      })) ?? null
+    );
   }
 );
 
-$authorizedUser
-  .on(submitLoginFormFx.doneData, (_, user) => user)
-  .on(submitSignUpFormFx.doneData, (_, user) => user);
+export const fetchAuthorizedUserFx = createEffect(async () => {
+  return (
+    (await getCurrentUserGenReq({
+      client: mainApiClient,
+      throwOnError: false,
+    })) ?? null
+  );
+});
+
+export const submitLogoutFx = createEffect(async () => {
+  await logoutGenReq({
+    client: mainApiClient,
+    throwOnError: false,
+  });
+
+  return null;
+});
+
+$authState
+  .on(fetchAuthorizedUserFx, (state) => ({
+    ...state,
+    loadStatus: 'loading',
+  }))
+  .on(submitLoginFormFx, (state) => ({
+    ...state,
+    loadStatus: 'loading',
+  }))
+  .on(submitSignUpFormFx, (state) => ({
+    ...state,
+    loadStatus: 'loading',
+  }))
+  .on(submitLogoutFx, (state) => ({
+    ...state,
+    loadStatus: 'loading',
+  }))
+  .on(fetchAuthorizedUserFx.doneData, (_, user) => ({
+    user,
+    loadStatus: 'loaded',
+  }))
+  .on(submitLoginFormFx.doneData, (_, user) => ({
+    user,
+    loadStatus: 'loaded',
+  }))
+  .on(submitSignUpFormFx.doneData, (_, user) => ({
+    user,
+    loadStatus: 'loaded',
+  }))
+  .on(submitLogoutFx.doneData, (_, user) => ({
+    user,
+    loadStatus: 'loaded',
+  }));

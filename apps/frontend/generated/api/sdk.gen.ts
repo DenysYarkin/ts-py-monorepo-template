@@ -11,6 +11,8 @@ import type {
   LoginData,
   LoginErrors,
   LoginResponses,
+  LogoutData,
+  LogoutResponses,
   SignupData,
   SignupErrors,
   SignupResponses,
@@ -96,6 +98,32 @@ export const loginGenReq = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+/**
+ * Log out the current user
+ *
+ * Invalidate current cookie session and clear session cookie
+ */
+export const logoutGenReq = <ThrowOnError extends boolean = false>(
+  options?: Options<LogoutData, ThrowOnError>
+) =>
+  (options?.client ?? client).post<
+    LogoutResponses,
+    unknown,
+    ThrowOnError,
+    'data'
+  >({
+    responseStyle: 'data',
+    security: [
+      {
+        in: 'cookie',
+        name: 'connect.sid',
+        type: 'apiKey',
+      },
+    ],
+    url: '/auth/logout',
+    ...options,
   });
 
 /**

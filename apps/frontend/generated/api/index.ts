@@ -4,11 +4,13 @@ export {
   getCurrentUserGenReq,
   healthCheckGenReq,
   loginGenReq,
+  logoutGenReq,
   type Options,
   signupGenReq,
 } from './sdk.gen';
 export type {
   Auth1Auth1Login,
+  Auth1Auth1Logout,
   Auth1Auth1Signup,
   AuthCookieObj,
   AuthLoginResponse,
@@ -29,6 +31,9 @@ export type {
   LoginErrors,
   LoginResponse,
   LoginResponses,
+  LogoutData,
+  LogoutResponse,
+  LogoutResponses,
   SharedError,
   SignupData,
   SignupError,
