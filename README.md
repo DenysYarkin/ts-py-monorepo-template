@@ -24,14 +24,15 @@ Use `DB_HOST_PORT`, `API_HOST_PORT`, and `FRONTEND_HOST_PORT` to control only ho
 Prepare database by running migrations:
 
 ```sh
-docker compose --env-file .env.docker up -d db api
-docker compose --env-file .env.docker exec api alembic upgrade head
+npm run docker:db:prepare
 ```
 
-To run the database, frontend and backend containers (add `-d` flag to run in the background):
+To run the database, frontend and backend containers:
 
 ```sh
-docker compose --env-file .env.docker up
+npm run docker:up
+# or
+npm run docker:up:detached
 ```
 
 By default, these URLs are exposed on the host:
@@ -41,10 +42,17 @@ By default, these URLs are exposed on the host:
 - PostgreSQL: `localhost:5433` (or `DB_HOST_PORT`)
 
 Database container uses a named volume `postgres_data:/var/lib/postgresql/data`, so the data will be persisted between container runs.
+
+To run migrations:
+
+```sh
+npm run docker:db:migrate
+```
+
 To tear down the database volume, run:
 
 ```sh
-docker compose --env-file .env.docker down -v
+npm run docker:db:teardown
 ```
 
 **Note!** Do not forget to run migrations in a new db after database volume removal.
@@ -75,13 +83,23 @@ Before implementing or changing the endpoint in the backend, the OpenAPI specifi
 
 Starting apps:
 
-- `npx turbo run frontend:dev` -- `frontend` development
-- `npx turbo run api:dev` -- `api` development. Make sure the virtual env is active before running this command.
+- `npm run frontend:dev` -- `frontend` development
+- `npm run api:dev` -- `api` development. Make sure the virtual env is active before running this command.
+- `npm run all:dev` -- `frontend` and `api` development. Make sure the virtual env is active before running this command.
 
 Clients generations:
 
 - `npx turbo run generate:client:py` -- generate Python types
 - `npx turbo run generate:client:ts` -- generate Python types
+
+Docker:
+
+- `npm run docker:db:prepare` -- start `db` and `api` containers and apply migrations
+- `npm run docker:up` -- run all containers attached
+- `npm run docker:up:detached` -- run all containers in background
+- `npm run docker:down` -- stop and remove containers
+- `npm run docker:db:teardown` -- stop and remove containers with volumes
+- `npm run docker:db:migrate` -- apply migrations in running `api` container
 
 Creating `alembic` migrations:
 
