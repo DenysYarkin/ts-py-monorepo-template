@@ -1,26 +1,22 @@
 FROM python:3.11-slim
 
-# Set a predictable app directory so the package `backend` is importable
-WORKDIR /app
+ENV PYTHONUNBUFFERED=1
 
-# Install build tools + SQLite dev
-RUN apt-get update && apt-get install -y \
-    gcc \
-    make \
+WORKDIR /workspace
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    sqlite3 \
-    libsqlite3-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /app/backend/
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+COPY requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy the backend package sources into a `backend/` folder in the image so
-# `import backend` works when Python's sys.path includes /app
-COPY . /app/backend
+COPY apps/api ./apps/api
 
-# Ensure Python finds the package root (/app)
-ENV PYTHONPATH=/app
+WORKDIR /workspace/apps/api
 
-# Default command - can be overridden by docker-compose for development
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8001", "--app-dir", "/app"]
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

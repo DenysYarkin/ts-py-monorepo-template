@@ -1,36 +1,58 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: postgres_db
-    restart: always
+    restart: unless-stopped
     environment:
-      # These map your .env variables to the Docker image specific variables
       POSTGRES_USER: ${DB_USERNAME:-username}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
-      POSTGRES_DB: ${DB_NAME:-maind_controllers}
+      POSTGRES_DB: ${DB_NAME:-main_db}
     ports:
-      # Maps localhost:5432 to container:5432
-      - "${DB_PORT:-5432}:5432"
+      - "${DB_HOST_PORT:-5432}:5432"
     volumes:
-      # Persist data even if container is removed
       - postgres_data:/var/lib/postgresql/data
-  backend:
-    build: ./backend
-    container_name: backend
-    command: uvicorn backend.main:app --host 0.0.0.0 --port 8001 --reload --app-dir /app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-username} -d ${DB_NAME:-main_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
     environment:
-      - CHROMA_HOST=chroma
-      - CHROMA_PORT=8000
-      - DB_HOST=postgres_db
-      - DB_PORT=5432
-    ports:
-      - "8001:8001"
+      DB_USERNAME: ${DB_USERNAME:-username}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-main_db}
+      PYTHONUNBUFFERED: "1"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
-      # Mount the entire repo into /app so top-level packages like `database` exist
-      - ./:/app
+      - ./apps/api:/workspace/apps/api
+    ports:
+      - "${API_HOST_PORT:-8000}:8000"
     depends_on:
-      - db
-      - chroma_db
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    restart: unless-stopped
+    environment:
+      MAIN_API_SERVICE_URL: http://api:8000
+      NODE_ENV: development
+    command: npm run frontend:dev --workspace=apps/frontend -- --hostname 0.0.0.0 --port 3000
+    volumes:
+      - ./apps/frontend:/workspace/apps/frontend
+    ports:
+      - "${FRONTEND_HOST_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_started
 
 volumes:
   postgres_data:

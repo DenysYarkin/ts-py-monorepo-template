@@ -9,7 +9,7 @@ DB_USERNAME = environ.get("DB_USERNAME", "username")
 DB_PASSWORD = environ.get("DB_PASSWORD", "password")
 DB_HOST = environ.get("DB_HOST", "localhost")
 DB_PORT = environ.get("DB_PORT", 5432)
-DB_NAME = environ.get("DB_NAME", "maind_controllers")
+DB_NAME = environ.get("DB_NAME", "main_db")
 
 DB_URL = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 

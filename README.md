@@ -17,32 +17,49 @@ Installation steps:
 
 ## Running with Docker
 
+Docker Compose uses variables from the root `.env.docker` file.
+Update this file before running containers if you need custom DB credentials or port.
+Use `DB_HOST_PORT`, `API_HOST_PORT`, and `FRONTEND_HOST_PORT` to control only host-exposed ports.
+
 Prepare database by running migrations:
+
 ```sh
-docker compose up -d db api
-docker compose exec api alembic upgrade head
+docker compose --env-file .env.docker up -d db api
+docker compose --env-file .env.docker exec api alembic upgrade head
 ```
 
-To run the database, frontend and backend containers `docker compose up` (or `docker compose up -d` to run in the background).
+To run the database, frontend and backend containers (add `-d` flag to run in the background):
+
+```sh
+docker compose --env-file .env.docker up
+```
+
+By default, these URLs are exposed on the host:
+
+- Frontend: `http://localhost:3000` (or `FRONTEND_HOST_PORT`)
+- API: `http://localhost:8000` (or `API_HOST_PORT`)
+- PostgreSQL: `localhost:5433` (or `DB_HOST_PORT`)
 
 Database container uses a named volume `postgres_data:/var/lib/postgresql/data`, so the data will be persisted between container runs.
 To tear down the database volume, run:
+
 ```sh
-docker compose down -v
+docker compose --env-file .env.docker down -v
 ```
+
 **Note!** Do not forget to run migrations in a new db after database volume removal.
 
 The database can be inspected by connecting to it with the following parameters:
+
 - Host: `localhost`
-- Port: `5432` (or your DB_PORT value if you set it)
-- Database: `maind_controllers` (or your DB_NAME)
-- Username: `username` (or your DB_USERNAME)
-- Password: `password` (or your DB_PASSWORD)
+- Port: `5433` (or your `DB_HOST_PORT` value from `.env.docker`)
+- Database: `main_db` (or your `DB_NAME` value from `.env.docker`)
+- Username: `username` (or your `DB_USERNAME` value from `.env.docker`)
+- Password: `password` (or your `DB_PASSWORD` value from `.env.docker`)
 
 Or via connection URL:
-- `jdbc:postgresql://localhost:5432/maind_controllers`
 
-TODO: envs
+- `jdbc:postgresql://localhost:<DB_HOST_PORT>/main_db`
 
 # Workflow
 
