@@ -1,5 +1,7 @@
 # Installation & Preparation
 
+## Running locally
+
 Prerequisites to run locally:
 
 - `python`: 3.11+
@@ -12,6 +14,35 @@ Installation steps:
 3. Activate the venv and install the dependencides `pip3 install -r requirements.txt`
 4. Copy `.env.example` files inside `apps/frontend` and `apps/api` dirs and rename new files to `.env`.
 5. Fill created `.env` files with the values relevant for you
+
+## Running with Docker
+
+Prepare database by running migrations:
+```sh
+docker compose up -d db api
+docker compose exec api alembic upgrade head
+```
+
+To run the database, frontend and backend containers `docker compose up` (or `docker compose up -d` to run in the background).
+
+Database container uses a named volume `postgres_data:/var/lib/postgresql/data`, so the data will be persisted between container runs.
+To tear down the database volume, run:
+```sh
+docker compose down -v
+```
+**Note!** Do not forget to run migrations in a new db after database volume removal.
+
+The database can be inspected by connecting to it with the following parameters:
+- Host: `localhost`
+- Port: `5432` (or your DB_PORT value if you set it)
+- Database: `maind_controllers` (or your DB_NAME)
+- Username: `username` (or your DB_USERNAME)
+- Password: `password` (or your DB_PASSWORD)
+
+Or via connection URL:
+- `jdbc:postgresql://localhost:5432/maind_controllers`
+
+TODO: envs
 
 # Workflow
 
