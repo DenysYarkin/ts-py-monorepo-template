@@ -24,6 +24,15 @@
     ]
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "docker:db:prepare": "docker compose --env-file .env.docker up -d db api && docker compose --env-file .env.docker exec api alembic upgrade head",
+    "docker:db:teardown": "docker compose --env-file .env.docker down -v",
+    "docker:db:migrate": "docker compose --env-file .env.docker exec api alembic upgrade head",
+    "docker:up": "docker compose --env-file .env.docker up",
+    "docker:up:detached": "docker compose --env-file .env.docker up -d",
+    "docker:down": "docker compose --env-file .env.docker down",
+    "frontend:dev": "npx turbo run frontend:dev",
+    "api:dev": "npx turbo run api:dev",
+    "all:dev": "npm run frontend:dev && npm run api:dev"
   }
 }
