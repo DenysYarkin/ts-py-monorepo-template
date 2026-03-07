@@ -34,5 +34,8 @@
     "frontend:dev": "npx turbo run frontend:dev",
     "api:dev": "npx turbo run api:dev",
     "all:dev": "npm run frontend:dev && npm run api:dev"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.21"
   }
 }

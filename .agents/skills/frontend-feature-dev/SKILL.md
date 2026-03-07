@@ -1,6 +1,6 @@
 ---
 name: frontend-feature-dev
-description: Use this skill when developing features at frontend (`frontend` app) or working with any React components (and any other UI code).
+description: Use this skill when making any changes to the frontend (`frontend` app) or working with any React components (and any other UI code).
 ---
 
 # Guidelines
@@ -9,6 +9,8 @@ description: Use this skill when developing features at frontend (`frontend` app
 2. You must use custom `shadcn` tailwind colors classes. Try to avoid using standard tailwind colors like `neutral-500`, `red-100`, etc. Instead you must use existing custom classes like `bg-accent`, `text-accent-foreground`, `border-border`, etc. DO NOT create new custom color classes, because we already have existing classes for all needed colors.
 3. For partially opaque colors, for example, hover background color of context menu button, use `muted/60` color.
 4. `apps/frontend/src/shared/components` directory is meant EXCLUSIVELY for reusable components like buttons, forms, etc. Mainly for the ones installed with `shadcn/ui` tool. If you need to create a new component that is not reusable, create it in the relevant feature or enttity directory.
+5. Using `Record<string, ...>` is fine, but if it's not guaranteed that the value for some key is defined, you must use `Record<string, ... | undefined>`.
+6. This project has tanstack query installed. You must be careful and not overuse it, since we already have our own data fetching and managing system based on `effector`. Usually, it makes sense if you have to load some data that is "local" to the current component and is not going to be edited or deleted. Otherwise, you must use `effector` stores and effects.
 
 ## Bad Practices
 
