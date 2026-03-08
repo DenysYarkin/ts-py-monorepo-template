@@ -1,6 +1,13 @@
 import { NextRequest } from 'next/server';
+import { resolveMainApiMock } from '@/shared/api/main-api-mocks';
 
 async function handler(req: NextRequest) {
+  const mockResponse = await resolveMainApiMock(req);
+
+  if (mockResponse) {
+    return mockResponse;
+  }
+
   const url = new URL(req.url);
   const path = url.pathname.replace('/api/proxy/main-api/', '');
   const targetUrl = `${process.env.MAIN_API_SERVICE_URL}/${path}${url.search}`;
